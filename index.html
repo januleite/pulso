@@ -25,22 +25,22 @@
     <section class="emotions">
       <p>Como você se sente agora?</p>
       <div class="buttons" id="emotionButtons">
-        <button data-emotion="amor">❤️ Amor</button>
-        <button data-emotion="esperanca">✨ Esperança</button>
-        <button data-emotion="paz">🕊️ Paz</button>
-        <button data-emotion="raiva">😡 Raiva</button>
-        <button data-emotion="ansiedade">😰 Ansiedade</button>
-        <button data-emotion="tristeza">😢 Tristeza</button>
-        <button data-emotion="solidao">🤝 Solidão</button>
-        <button data-emotion="gratidao">🙏 Gratidão</button>
+        <button data-emotion="amor" aria-pressed="false" aria-label="Amor">❤️ Amor</button>
+        <button data-emotion="esperanca" aria-pressed="false" aria-label="Esperança">✨ Esperança</button>
+        <button data-emotion="paz" aria-pressed="false" aria-label="Paz">🕊️ Paz</button>
+        <button data-emotion="raiva" aria-pressed="false" aria-label="Raiva">😡 Raiva</button>
+        <button data-emotion="ansiedade" aria-pressed="false" aria-label="Ansiedade">😰 Ansiedade</button>
+        <button data-emotion="tristeza" aria-pressed="false" aria-label="Tristeza">😢 Tristeza</button>
+        <button data-emotion="solidao" aria-pressed="false" aria-label="Solidão">🤝 Solidão</button>
+        <button data-emotion="gratidao" aria-pressed="false" aria-label="Gratidão">🙏 Gratidão</button>
       </div>
       <div class="hint">(será registrado anonimamente; coordenadas são arredondadas para preservar privacidade)</div>
     </section>
 
     <section class="live" id="liveSection">
       <h2>Pulso agora</h2>
-      <div id="liveCounts">Carregando...</div>
-      <div id="liveParticipants"></div>
+      <div id="liveCounts" aria-live="polite">Carregando...</div>
+      <div id="liveParticipants" aria-live="polite"></div>
     </section>
 
     <section class="atlas" id="atlasSection">
@@ -48,9 +48,11 @@
       <div id="atlasList">Carregando Atlas...</div>
     </section>
 
+    <div id="srAnnounce" class="sr-only" aria-live="polite"></div>
+
     <footer class="footer">
       <p>Para configurar: crie o banco Supabase e rode o SQL de setup (pulso-do-brasil.sql) no SQL Editor.</p>
-      <p>Project URL e ANON KEY → cole no topo desta página (linhas comentadas).</p>
+      <p>Project URL e ANON KEY → cole no topo desta página (linhas comentadas) — evite expor chaves sensíveis.</p>
     </footer>
   </div>
 

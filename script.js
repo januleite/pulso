@@ -1,5 +1,5 @@
-// script.js - Pulso do Brasil frontend (sem chaves)
-// Este arquivo usa window.SUPABASE_URL e window.SUPABASE_ANON_KEY definidos em index.html
+// script.js - Pulso do Brasil frontend (accessibility, feedback, atlas graphs)
+// Uses window.SUPABASE_URL and window.SUPABASE_ANON_KEY from index.html
 
 const SUPABASE_URL = window.SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || '';
@@ -15,34 +15,77 @@ const buttons = document.querySelectorAll('#emotionButtons button');
 const liveCountsEl = $('liveCounts');
 const liveParticipantsEl = $('liveParticipants');
 const atlasListEl = $('atlasList');
+const srAnnounce = $('srAnnounce');
 
-// Register click handlers for emotions
+const EMOTIONS = ['amor','esperanca','paz','raiva','ansiedade','tristeza','solidao','gratidao'];
+const EMO_COLORS = {
+  amor: getComputedStyle(document.documentElement).getPropertyValue('--emotion-amor').trim() || '#ff2d55',
+  esperanca: getComputedStyle(document.documentElement).getPropertyValue('--emotion-esperanca').trim() || '#ffc23d',
+  paz: getComputedStyle(document.documentElement).getPropertyValue('--emotion-paz').trim() || '#2ee6c8',
+  raiva: getComputedStyle(document.documentElement).getPropertyValue('--emotion-raiva').trim() || '#ff3b1f',
+  ansiedade: getComputedStyle(document.documentElement).getPropertyValue('--emotion-ansiedade').trim() || '#b14dff',
+  tristeza: getComputedStyle(document.documentElement).getPropertyValue('--emotion-tristeza').trim() || '#2f6bff',
+  solidao: getComputedStyle(document.documentElement).getPropertyValue('--emotion-solidao').trim() || '#8a93a8',
+  gratidao: getComputedStyle(document.documentElement).getPropertyValue('--emotion-gratidao').trim() || '#3ddb6a'
+};
+
+// Attach handlers and accessibility improvements
 buttons.forEach(btn => {
+  // ensure accessible name
+  btn.setAttribute('role','button');
+  btn.setAttribute('aria-pressed','false');
+
+  // keyboard: Space also triggers a click for some browsers; keep for completeness
+  btn.addEventListener('keydown', (e) => {
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      btn.click();
+    }
+  });
+
   btn.addEventListener('click', async () => {
     const emotion = btn.dataset.emotion;
+    // visual feedback
+    btn.classList.add('animating');
     btn.disabled = true;
+    const origText = btn.textContent;
     btn.textContent = 'Registrando...';
+    btn.setAttribute('aria-pressed','true');
+
     try {
       const coords = await getCoords();
       await sendBeat(emotion, coords?.latitude ?? null, coords?.longitude ?? null);
-      btn.textContent = 'Registrado 👍';
-      setTimeout(() => { btn.disabled = false; btn.textContent = btn.dataset.emotionLabel || prettify(emotion); }, 900);
+      // success
+      btn.classList.remove('animating');
+      btn.classList.add('registered');
+      btn.textContent = 'Registrado ✓';
+      announceSR(`Registrado ${emotion}`);
     } catch (err) {
       console.error(err);
+      btn.classList.remove('animating');
+      btn.classList.add('error');
       btn.textContent = 'Erro';
-      setTimeout(() => { btn.disabled = false; btn.textContent = prettify(emotion); }, 900);
+      announceSR('Erro ao registrar');
     }
+
+    // restore after short delay
+    setTimeout(() => {
+      btn.classList.remove('registered','error');
+      btn.disabled = false;
+      btn.textContent = origText;
+      btn.setAttribute('aria-pressed','false');
+    }, 900);
   });
-  // store original label
-  btn.dataset.emotionLabel = btn.textContent;
 });
 
-function prettify(key) {
-  return key.charAt(0).toUpperCase() + key.slice(1);
+function announceSR(text){
+  if (srAnnounce) {
+    srAnnounce.textContent = '';
+    setTimeout(() => { srAnnounce.textContent = text; }, 100);
+  }
 }
 
 async function getCoords() {
-  // try to obtain geolocation but do not fail if unavailable
   return new Promise((resolve) => {
     if (!navigator.geolocation) return resolve(null);
     const timer = setTimeout(() => resolve(null), 4000);
@@ -54,11 +97,12 @@ async function getCoords() {
 }
 
 async function sendBeat(emotion, lat = null, lng = null) {
-  // call Supabase RPC cast_beat (security definer)
   const args = { p_emotion: emotion };
   if (lat !== null && lng !== null) { args.p_lat = lat; args.p_lng = lng; }
   const { data, error } = await supabase.rpc('cast_beat', args);
   if (error) throw error;
+  // refresh live quickly after sending
+  fetchLive();
   return data;
 }
 
@@ -69,7 +113,6 @@ async function fetchLive() {
     liveCountsEl.textContent = 'Erro ao obter dados ao vivo';
     return;
   }
-  // RPC may return an array or object depending on Postgres; normalize
   const payload = Array.isArray(data) ? data[0] : data;
   if (!payload) {
     liveCountsEl.textContent = 'Sem dados';
@@ -80,8 +123,9 @@ async function fetchLive() {
   const cities = payload.cities || 0;
   const states = payload.states || 0;
 
-  liveCountsEl.innerHTML = Object.keys(counts).map(k => {
-    return `<div class="count"><strong>${k}</strong>: ${counts[k]}</div>`;
+  liveCountsEl.innerHTML = EMOTIONS.map(k => {
+    const v = counts[k] || 0;
+    return `<div class="count" aria-label="${k} ${v}"><strong>${k}</strong>: ${v}</div>`;
   }).join('');
   liveParticipantsEl.textContent = `${parts} batimentos (últimos 15 min) • cidades: ${cities} • estados: ${states}`;
 }
@@ -101,13 +145,30 @@ async function fetchAtlas() {
     atlasListEl.textContent = 'Nenhum dado no atlas ainda';
     return;
   }
+
   atlasListEl.innerHTML = data.map(d => {
-    const dist = JSON.stringify(d.distribution || {});
-    return `<div class="atlas-card" style="border-left:4px solid ${d.color || '#ccc'}">
+    const dist = d.distribution || {};
+    // build distribution bar segments
+    const segs = EMOTIONS.map(e => {
+      const v = dist[e] || 0;
+      const pct = Math.round(v * 100);
+      const color = EMO_COLORS[e] || '#888';
+      return `<div class="dist-seg" title="${e}: ${pct}%" style="width:${pct}%;background:${color}"></div>`;
+    }).join('');
+
+    // legend items
+    const legend = EMOTIONS.map(e => `<div class="legend-item"><span class="legend-swatch" style="background:${EMO_COLORS[e]}"></span>${e}</div>`).join('');
+
+    // accessible summary
+    const summary = EMOTIONS.map(e => `${e}: ${Math.round((dist[e]||0)*100)}%`).join(', ');
+
+    return `<div class="atlas-card" role="group" aria-label="Atlas ${d.day}: ${d.dominant} (${d.participations} participações)">
       <div class="atlas-day">${d.day}</div>
       <div class="atlas-dominant">${d.dominant} — ${d.participations} participações</div>
+      <div class="dist-bar">${segs}</div>
+      <div class="dist-legend">${legend}</div>
       <div class="atlas-sound">${d.soundscape_id}</div>
-      <div class="atlas-dist">${dist}</div>
+      <div class="sr-only">${summary}</div>
     </div>`;
   }).join('');
 }
@@ -119,11 +180,10 @@ fetchAtlas();
 setInterval(fetchLive, 8000);
 setInterval(fetchAtlas, 60_000);
 
-// If realtime is desired and Supabase project enabled Realtime, you can subscribe as well
+// Realtime subscription (best-effort, optional)
 try {
   if (supabase && supabase.channel) {
-    const channel = supabase.channel('public:beats').on('postgres_changes', { event: '*', schema: 'public', table: 'beats' }, (payload) => {
-      // when a new beat arrives, refresh live
+    supabase.channel('public:beats').on('postgres_changes', { event: '*', schema: 'public', table: 'beats' }, (payload) => {
       fetchLive();
     }).subscribe();
   }
@@ -131,5 +191,5 @@ try {
   // ignore if realtime not available
 }
 
-// small helper for console debugging
+// expose helpers for debugging
 window.pulso = { fetchLive, fetchAtlas, sendBeat };

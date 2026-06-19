@@ -11,6 +11,15 @@
   --radius:12px;
   --max-width:980px;
   --text:#e6eef6;
+  --focus: #7dd3fc;
+  --emotion-amor: #ff2d55;
+  --emotion-esperanca: #ffc23d;
+  --emotion-paz: #2ee6c8;
+  --emotion-raiva: #ff3b1f;
+  --emotion-ansiedade: #b14dff;
+  --emotion-tristeza: #2f6bff;
+  --emotion-solidao: #8a93a8;
+  --emotion-gratidao: #3ddb6a;
 }
 
 *{box-sizing:border-box}
@@ -23,9 +32,19 @@ html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Seg
 .emotions{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:var(--radius);margin-bottom:16px}
 .emotions p{margin:0 0 8px 0;color:var(--muted)}
 .buttons{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
-.buttons button{background:var(--card);border:1px solid rgba(255,255,255,0.04);color:var(--text);padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600;min-width:120px;display:inline-flex;align-items:center;gap:8px}
+.buttons button{background:var(--card);border:1px solid rgba(255,255,255,0.04);color:var(--text);padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600;min-width:120px;display:inline-flex;align-items:center;gap:8px;transition:transform .08s ease, box-shadow .12s ease}
 .buttons button:active{transform:translateY(1px)}
 .buttons button[disabled]{opacity:0.6;cursor:default}
+.buttons button:focus{outline:3px solid var(--focus);outline-offset:2px}
+
+/* success / error states */
+.buttons button.registered{box-shadow:0 6px 18px rgba(61,219,106,0.12);border-color:rgba(61,219,106,0.3)}
+.buttons button.error{box-shadow:0 6px 18px rgba(255,45,85,0.08);border-color:rgba(255,45,85,0.18)}
+
+/* tiny scale animation when registering */
+@keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(0.98); } 100% { transform: scale(1); } }
+.buttons button.animating{animation: pop .18s ease}
+
 .hint{color:var(--muted);margin-top:10px;font-size:0.9rem}
 
 .live, .atlas{background:var(--glass);padding:14px;border-radius:12px;margin-bottom:14px}
@@ -42,6 +61,16 @@ html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Seg
 .atlas-dominant{color:var(--muted);margin-top:6px}
 .atlas-sound{margin-top:8px;font-size:0.9rem;color:var(--muted)}
 .atlas-dist{margin-top:8px;font-family:monospace;font-size:0.85rem;color:var(--muted);white-space:pre-wrap;word-break:break-word}
+
+/* distribution bar */
+.dist-bar{display:flex;height:14px;border-radius:8px;overflow:hidden;background:rgba(0,0,0,0.08);margin-top:8px}
+.dist-seg{height:100%;}
+.dist-legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.legend-item{display:inline-flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--muted)}
+.legend-swatch{width:12px;height:12px;border-radius:3px}
+
+/* screen-reader only */
+.sr-only{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
 
 .footer{margin-top:18px;color:var(--muted);font-size:0.85rem}
 
