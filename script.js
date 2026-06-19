@@ -1,5 +1,5 @@
-// script.js - Weather Dashboard (remove exposed API key placeholder)
-const API_KEY = 'YOUR_API_KEY'; // OpenWeatherMap API key - set via README instructions
+// script.js - Weather Dashboard (OpenWeatherMap API key inserted)
+const API_KEY = '62737e796d58c7cc8821c0ef9e0479a0'; // OpenWeatherMap API key provided by user
 const units = 'metric';
 const lang = 'pt_br';
 
