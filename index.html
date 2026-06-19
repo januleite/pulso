@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard - Pulso do Brasil</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🌤️ Weather Dashboard</h1>
+            <p class="subtitle">Previsão de Tempo em Tempo Real</p>
+        </header>
+
+        <!-- Search Bar -->
+        <div class="search-section">
+            <input 
+                type="text" 
+                id="searchInput" 
+                class="search-input" 
+                placeholder="Digite uma cidade (ex: São Paulo, Rio de Janeiro)..."
+                autocomplete="off"
+            >
+            <button id="searchBtn" class="search-btn">🔍 Buscar</button>
+            <button id="locationBtn" class="location-btn" title="Usar minha localização">📍</button>
+        </div>
+
+        <!-- Current Weather -->
+        <div class="current-weather" id="currentWeather">
+            <div class="loading">Carregando dados...</div>
+        </div>
+
+        <!-- Weather Details Grid -->
+        <div class="details-grid" id="detailsGrid" style="display: none;">
+            <div class="detail-card">
+                <div class="detail-icon">💧</div>
+                <div class="detail-label">Umidade</div>
+                <div class="detail-value" id="humidity">--%</div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-icon">💨</div>
+                <div class="detail-label">Vento</div>
+                <div class="detail-value" id="windSpeed">-- m/s</div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-icon">🔽</div>
+                <div class="detail-label">Pressão</div>
+                <div class="detail-value" id="pressure">-- hPa</div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-icon">👁️</div>
+                <div class="detail-label">Visibilidade</div>
+                <div class="detail-value" id="visibility">-- km</div>
+            </div>
+        </div>
+
+        <!-- 5-Day Forecast -->
+        <div class="forecast-section" id="forecastSection" style="display: none;">
+            <h2>Previsão de 5 Dias</h2>
+            <div class="forecast-grid" id="forecastGrid"></div>
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage" style="display: none;"></div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Dados fornecidos por <strong>OpenWeatherMap API</strong></p>
+            <p>© 2026 - Januleite Weather Dashboard</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
