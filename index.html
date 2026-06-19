@@ -1,77 +1,60 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather Dashboard - Pulso do Brasil</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pulso do Brasil</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <h1>🌤️ Weather Dashboard</h1>
-            <p class="subtitle">Previsão de Tempo em Tempo Real</p>
-        </header>
+  <!-- IMPORTANT: Cole seu Project URL e ANON KEY do Supabase abaixo (Settings → API)
+       Substitua os placeholders entre aspas. Não compartilhe essas chaves publicamente.
+  -->
+  <script>
+    window.SUPABASE_URL = 'YOUR_SUPABASE_URL';
+    window.SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+  </script>
 
-        <!-- Search Bar -->
-        <div class="search-section">
-            <input 
-                type="text" 
-                id="searchInput" 
-                class="search-input" 
-                placeholder="Digite uma cidade (ex: São Paulo, Rio de Janeiro)..."
-                autocomplete="off"
-            >
-            <button id="searchBtn" class="search-btn">🔍 Buscar</button>
-            <button id="locationBtn" class="location-btn" title="Usar minha localização">📍</button>
-        </div>
+  <div class="container pulso">
+    <header class="header">
+      <h1>Pulso do Brasil</h1>
+      <p class="subtitle">Registre um batimento — anônimo e efêmero</p>
+    </header>
 
-        <!-- Current Weather -->
-        <div class="current-weather" id="currentWeather">
-            <div class="loading">Carregando dados...</div>
-        </div>
+    <section class="emotions">
+      <p>Como você se sente agora?</p>
+      <div class="buttons" id="emotionButtons">
+        <button data-emotion="amor">❤️ Amor</button>
+        <button data-emotion="esperanca">✨ Esperança</button>
+        <button data-emotion="paz">🕊️ Paz</button>
+        <button data-emotion="raiva">😡 Raiva</button>
+        <button data-emotion="ansiedade">😰 Ansiedade</button>
+        <button data-emotion="tristeza">😢 Tristeza</button>
+        <button data-emotion="solidao">🤝 Solidão</button>
+        <button data-emotion="gratidao">🙏 Gratidão</button>
+      </div>
+      <div class="hint">(será registrado anonimamente; coordenadas são arredondadas para preservar privacidade)</div>
+    </section>
 
-        <!-- Weather Details Grid -->
-        <div class="details-grid" id="detailsGrid" style="display: none;">
-            <div class="detail-card">
-                <div class="detail-icon">💧</div>
-                <div class="detail-label">Umidade</div>
-                <div class="detail-value" id="humidity">--%</div>
-            </div>
-            <div class="detail-card">
-                <div class="detail-icon">💨</div>
-                <div class="detail-label">Vento</div>
-                <div class="detail-value" id="windSpeed">-- m/s</div>
-            </div>
-            <div class="detail-card">
-                <div class="detail-icon">🔽</div>
-                <div class="detail-label">Pressão</div>
-                <div class="detail-value" id="pressure">-- hPa</div>
-            </div>
-            <div class="detail-card">
-                <div class="detail-icon">👁️</div>
-                <div class="detail-label">Visibilidade</div>
-                <div class="detail-value" id="visibility">-- km</div>
-            </div>
-        </div>
+    <section class="live" id="liveSection">
+      <h2>Pulso agora</h2>
+      <div id="liveCounts">Carregando...</div>
+      <div id="liveParticipants"></div>
+    </section>
 
-        <!-- 5-Day Forecast -->
-        <div class="forecast-section" id="forecastSection" style="display: none;">
-            <h2>Previsão de 5 Dias</h2>
-            <div class="forecast-grid" id="forecastGrid"></div>
-        </div>
+    <section class="atlas" id="atlasSection">
+      <h2>Atlas diário (últimos dias)</h2>
+      <div id="atlasList">Carregando Atlas...</div>
+    </section>
 
-        <!-- Error Message -->
-        <div class="error-message" id="errorMessage" style="display: none;"></div>
+    <footer class="footer">
+      <p>Para configurar: crie o banco Supabase e rode o SQL de setup (pulso-do-brasil.sql) no SQL Editor.</p>
+      <p>Project URL e ANON KEY → cole no topo desta página (linhas comentadas).</p>
+    </footer>
+  </div>
 
-        <!-- Footer -->
-        <footer class="footer">
-            <p>Dados fornecidos por <strong>OpenWeatherMap API</strong></p>
-            <p>© 2026 - Januleite Weather Dashboard</p>
-        </footer>
-    </div>
-
-    <script src="script.js"></script>
+  <!-- Supabase JS (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
